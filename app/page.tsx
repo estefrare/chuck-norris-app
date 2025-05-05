@@ -19,20 +19,16 @@ export default function Home() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(API_URL, {
-        next: { revalidate: 60 },
-      });
+      const response = await fetch(API_URL);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      console.log("Fetched joke:", data);
       setJoke(data);
     }
     catch (error) {
       console.error("Error fetching joke:", error);
       setError("Failed to fetch a joke. Please try again later.");
-      return;
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from "react";
 import Link from "next/link";
-import { getFavorites, removeFavorite } from "../lib/storage";
+import { getFavorites, removeFavorite, updateFavorite } from "../lib/storage";
 import type { Joke } from "../lib/storage";
 import JokeCard from "../components/JokeCard";
 
@@ -12,20 +12,23 @@ export default function Favorites() {
     setFavorites(removeFavorite(id));
   }
 
+  const handleUpdateFavorite = (id: Joke['id'], rate: number) => {
+    setFavorites(updateFavorite(id, rate));
+  };
+
   return (
     <div>
-      <ul className="space-y-4 mb-8">
-        {favorites.map((item, index) => (
-          <JokeCard key={index} joke={item} removeFavorite={handleRemoveFavorite} isFavorite/>
+      <ul className="space-y-8 mb-8 max-h-200 overflow-y-auto">
+        {favorites.map((item) => (
+          <JokeCard key={item.id} joke={item} removeFavorite={handleRemoveFavorite} setRate={handleUpdateFavorite} isFavorite />
         ))}
       </ul>
       <Link
         href="/"
-        className={`rounded-full border border-solid transition-colors flex items-center justify-center gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto`}
+        className="rounded-full border flex items-center justify-center dark:hover:bg-[#ccc] sm:h-12 max-w-40"
       >
         Back
       </Link>
     </div>
   );
-
 }
