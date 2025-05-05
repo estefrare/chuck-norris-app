@@ -1,34 +1,22 @@
 'use client';
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { useState } from "react";
 import Link from "next/link";
-import { getFavorites } from "../lib/storage";
+import { getFavorites, removeFavorite } from "../lib/storage";
+import type { Joke } from "../lib/storage";
+import JokeCard from "../components/JokeCard";
 
 export default function Favorites() {
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<Joke[]>(getFavorites());
 
-  useEffect(() => {
-    const storedFavorites = getFavorites();
-    setFavorites(storedFavorites);
-  }, []);
+  const handleRemoveFavorite = (id: Joke['id']) => {
+    setFavorites(removeFavorite(id));
+  }
 
   return (
     <div>
       <ul className="space-y-4 mb-8">
         {favorites.map((item, index) => (
-          <li
-            key={index}
-            className="flex items-start gap-3 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
-          >
-            <Image
-              aria-hidden
-              src="/favorite.svg"
-              alt="Github icon"
-              width={16}
-              height={16}
-            />
-            <span className="text-gray-800 dark:text-gray-100">{item}</span>
-          </li>
+          <JokeCard key={index} joke={item} removeFavorite={handleRemoveFavorite} isFavorite/>
         ))}
       </ul>
       <Link

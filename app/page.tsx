@@ -1,15 +1,19 @@
 'use client';
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import type { Joke } from "./lib/storage";
+import { getFavorites, saveToFavorites, removeFavorite } from "./lib/storage";
+import JokeCard from "./components/JokeCard";
 
 const API_URL = "https://api.chucknorris.io/jokes/random";
 
 export default function Home() {
 
-  const [joke, setJoke] = useState<string | null>(null);
+  const [joke, setJoke] = useState<Joke>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Joke[]>(getFavorites());
 
   const fetchJoke = useCallback(async () => {
     setIsLoading(true);
@@ -22,7 +26,8 @@ export default function Home() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setJoke(data.value);
+      console.log("Fetched joke:", data);
+      setJoke(data);
     }
     catch (error) {
       console.error("Error fetching joke:", error);
@@ -34,8 +39,20 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-      fetchJoke();
+    fetchJoke();
   }, [fetchJoke]);
+
+  const isFavorite = useMemo(() => {
+    return favorites.some((item) => item.id === joke?.id);
+  }, [favorites, joke])
+
+  const addFavorites = (joke: Joke) => {
+    setFavorites(saveToFavorites(joke))
+  }
+
+  const handleRemoveFavorite = (id: Joke['id']) => {
+    setFavorites(removeFavorite(id));
+  }
 
   const renderJoke = () => {
     if (error) {
@@ -44,14 +61,17 @@ export default function Home() {
     if (isLoading) {
       return "Loading...";
     }
-    return joke;
+    if (!joke) {
+      return "No joke found";
+    }
+    return <JokeCard joke={joke} isFavorite={isFavorite} addFavorite={addFavorites} removeFavorite={handleRemoveFavorite} />;
   };
 
   return (
     <>
       <Image
         src="https://api.chucknorris.io/img/chucknorris_logo_coloured_small@2x.png"
-        alt="Next.js logo"
+        alt="Chuck logo"
         width={180}
         height={38}
         priority
