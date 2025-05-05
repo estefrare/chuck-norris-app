@@ -23,6 +23,9 @@ export default function Favorites() {
           <JokeCard key={item.id} joke={item} removeFavorite={handleRemoveFavorite} setRate={handleUpdateFavorite} isFavorite />
         ))}
       </ul>
+      <p className="text-center text-sm text-gray-500 mb-8">
+        {favorites.length === 0 && "No favorites yet"}
+      </p>
       <Link
         href="/"
         className="rounded-full border flex items-center justify-center dark:hover:bg-[#ccc] sm:h-12 max-w-40"

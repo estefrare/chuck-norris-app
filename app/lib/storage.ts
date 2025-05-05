@@ -32,6 +32,14 @@ export const updateFavorite = (joke: Joke['id'], rate: number) => {
       return { ...fav, rate };
     }
     return fav;
+  }).sort((a: Joke, b: Joke) => {
+    if (a.rate > b.rate) {
+      return -1;
+    }
+    if (a.rate < b.rate) {
+      return 1;
+    }
+    return 0;
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
   return favorites;
